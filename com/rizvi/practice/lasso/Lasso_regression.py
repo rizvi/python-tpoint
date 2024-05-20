@@ -47,7 +47,6 @@ def plot_results(y_test, y_pred):
 
 # Load your dataset
 df = pd.read_csv(r'sonar.csv')
-# df = pd.read_csv(r'E:\MIT-IIT-DU\3rd_Semester\Dr. Mohammad Shoyaib Sir\Dataset\sonar.csv')
 X = df.iloc[:, :-1].values  # Convert DataFrame to NumPy array
 y = df.iloc[:, -1].values
 
