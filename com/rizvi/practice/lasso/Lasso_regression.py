@@ -78,8 +78,10 @@ m, n = X_train.shape
 theta = np.zeros(n) + 0.0
 lambda_param = 0.008 # Adjust this parameter as needed
 num_iters = 100  # Adjust this parameter as needed
+tol = 1e-4  # Tolerance for convergence
 
-for _ in range(num_iters):
+for iter_count in range(num_iters):
+    theta_old = theta.copy()
     for j in range(n):
         tmp_theta = theta.copy()
         tmp_theta[j] = 0.0
@@ -93,6 +95,10 @@ for _ in range(num_iters):
             theta[j] = (arg1 - arg2) / (X_train[:, j]**2).sum()
         else:
             theta[j] = 0.0
+
+    # Check for convergence
+    if np.linalg.norm(theta - theta_old) < tol:
+        break
 
 theta_best = theta
 
@@ -140,3 +146,11 @@ from sklearn.metrics import accuracy_score
 accuracy = accuracy_score(y_test, y_pred_knn)
 
 print(f"KNN Accuracy: {accuracy}")
+
+# Output
+# In this modified code:
+#
+#     We introduced tol, which represents the tolerance level for convergence.
+#     Inside the loop, we keep track of the previous theta vector with theta_old.
+#     After updating theta, we check if the L2 norm of the difference between theta and theta_old falls below the tolerance tol.
+#     If the change in theta falls below the tolerance, we break out of the loop, indicating convergence.
