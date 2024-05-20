@@ -76,17 +76,25 @@ y_train = np.array(y_train, dtype=float).reshape(-1, 1)
 
 m, n = X_train.shape
 theta = np.zeros(n) + 0.0
-lambda_param = 0.008 # Regularization parameter, adjust as needed
-num_iters = 100  # Number of iterations for optimization, adjust as needed
+lambda_param = 0.008 # Adjust this parameter as needed
+num_iters = 100  # Adjust this parameter as needed
+tol = 1e-4  # Tolerance for convergence
 
-for _ in range(num_iters):
+for iter_count in range(num_iters):
+    theta_old = theta.copy()
     for j in range(n):
         tmp_theta = theta.copy()
         tmp_theta[j] = 0.0
         r_j = y_train.ravel() - X_train.dot(tmp_theta)
         arg1 = np.dot(X_train[:, j], r_j)
         arg2 = lambda_param * m
-        theta[j] = arg1 / (X_train[:, j]**2).sum() + arg2
+
+        # Update theta[j] using ridge regression update rule
+        theta[j] = arg1 / ((X_train[:, j]**2).sum() + arg2)
+
+    # Check for convergence
+    if np.linalg.norm(theta - theta_old) < tol:
+        break
 
 theta_best = theta
 
@@ -119,7 +127,7 @@ theta_best_non_zero = theta_best[mask]
 print(f"Theta Best NON ZERO: {theta_best_non_zero}")
 
 # Create a KNN classifier
-knn = KNeighborsClassifier(n_neighbors=5)  # You can adjust the number of neighbors as needed
+knn = KNeighborsClassifier(n_neighbors=3)  # You can adjust the number of neighbors as needed
 
 # Use only the features corresponding to the non-zero coefficients for training
 X_train_non_zero = X_train[:, mask]
@@ -134,3 +142,17 @@ from sklearn.metrics import accuracy_score
 accuracy = accuracy_score(y_test, y_pred_knn)
 
 print(f"KNN Accuracy: {accuracy}")
+
+
+# Output
+#
+# In this Ridge Regression code:
+#
+# - Instead of using the Lasso update rule, we use the update rule specific to Ridge Regression.
+# - The update rule for Ridge Regression is:
+#
+#   theta_j = \frac{\sum_{i=1}^{m} x_{ij} \cdot r_i}{\sum_{i=1}^{m} x_{ij}^2 + \lambda} \]
+#
+#   where r_i  represents the residuals, \( x_{ij} \) represents the \( j \)-th feature of the \( i \)-th data point,
+#   \( \lambda \) is the regularization parameter, and \( \theta_j \) is the \( j \)-th parameter being updated.
+# - We iterate until convergence, similar to Lasso Regression, by checking the L2 norm of the difference between the current and previous parameter vectors.
