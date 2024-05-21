@@ -10,7 +10,6 @@ from com.rizvi.practice.pls_nipals.nipals_algo import NIPALS
 # Define the PLS Regression class
 class PLSRegression:
     def __init__(self, n_components, max_iters=100, tol=1e-4):
-        # Initialize the NIPALS algorithm with the specified parameters
         self.nipals = NIPALS(n_components, max_iters, tol)
         self.n_components = n_components
 
@@ -38,7 +37,13 @@ le = LabelEncoder()
 y = le.fit_transform(y)  # Encode the target variable
 
 # Split the dataset into training and test sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# We ensure that at least one sample from each class is in the test set by stratifying the split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=42, stratify=y)
+
+print("target values: ", len(y_test))
+# Check if the test set is empty and adjust accordingly
+if len(y_test) == 0:
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=1 / len(y), random_state=42, stratify=y)
 
 # Apply PLS Regression
 n_components = 2  # Set the number of PLS components
